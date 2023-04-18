@@ -3,7 +3,7 @@ package com.isep;
 import java.util.*;
 import java.io.*;
 
-public class GraphAdjList {
+public class GraphAdjList extends AbstractGraph {
     private int N; // number of nodes
     private int M; // number of edges
     private List<List<Integer>> adj; // adjacency list representation
@@ -21,8 +21,8 @@ public class GraphAdjList {
     // Initializes a graph from a specified input stream.
     public GraphAdjList(InputStream inputStream) throws FileNotFoundException {
         Scanner scanner = new Scanner(inputStream);
-        this.N = 4; // number of nodes is 4
-        this.M = 6; // number of edges is 6
+        this.N = 6;
+        this.M = 4;
         adj = new ArrayList<>();
         for (int i = 0; i <= N; i++) { // <= N to accommodate for 1-based indexing of nodes
             adj.add(new ArrayList<>());
@@ -39,6 +39,15 @@ public class GraphAdjList {
     // Return the total order and the size of the graph.
     public int getOrder() {
         return N;
+    }
+
+    public int countEdges() {
+        int totalEdges = 0;
+        for (int i = 1; i <= N; i++) {
+            totalEdges += adj.get(i).size();
+        }
+        M = totalEdges / 2;
+        return totalEdges / 2;
     }
 
     public int getSize() {
@@ -66,36 +75,6 @@ public class GraphAdjList {
     // Create a function called Degree(int v) that returns for a given vertex v, its degree.
     public int degree(int v) {
         return adj.get(v).size();
-    }
-
-    // 1. What is the average, minimal and maximal degree of the graph?
-    public double averageDegree() {
-        int totalDegree = 0;
-        for (int i = 0; i < N; i++) {
-            totalDegree += degree(i);
-        }
-        return (double) totalDegree / N;
-    }
-
-    public int minDegree() {
-        int minDegree = Integer.MAX_VALUE;
-        for (int i = 0; i < N; i++) {
-            minDegree = Math.min(minDegree, degree(i));
-        }
-        return minDegree;
-    }
-
-    public int maxDegree() {
-        int maxDegree = Integer.MIN_VALUE;
-        for (int i = 0; i < N; i++) {
-            maxDegree = Math.max(maxDegree, degree(i));
-        }
-        return maxDegree;
-    }
-
-    // 1. What is the edge-density?
-    public double edgeDensity() {
-        return (double) (2 * M) / (N * (N - 1));
     }
 
     // 2. Are there any isolated nodes? If yes, which ones?
@@ -143,6 +122,8 @@ public class GraphAdjList {
         FileInputStream fis = new FileInputStream("src/com/isep/graph.txt");
         GraphAdjList graph = new GraphAdjList(fis);
         graph.printAdjList();
+        graph.countEdges();
+        System.out.println("Number of edges: " + graph.getSize());
 
         // Test functions
         graph.neighbors(1);
@@ -151,7 +132,7 @@ public class GraphAdjList {
         System.out.println("Min degree: " + graph.minDegree());
         System.out.println("Max degree: " + graph.maxDegree());
         System.out.println("Edge density: " + graph.edgeDensity());
-        System.out.println("Isolated nodes: " + graph.isolatedNodes());
+        //System.out.println("Isolated nodes: " + graph.isolatedNodes());
         System.out.println("Has loops: " + graph.hasLoops());
 
         // Read graph from keyboard input
@@ -159,3 +140,41 @@ public class GraphAdjList {
         inputGraph.printAdjList();
     }
 }
+
+// Graph.txt graph data
+// N = 6
+// 0 -> []
+// 1 -> [1, 1, 2, 3]
+// 2 -> [1, 3, 3]
+// 3 -> [1, 2, 2, 4]
+// 4 -> [3]
+// 5 -> []
+// 6 -> []
+// Number of edges: 6
+// Neighbors of vertex 1: [1, 1, 2, 3]
+// Degree of vertex 1: 4
+// Average degree: 2.0
+// Min degree: 0
+// Max degree: 4
+// Edge density: 0.4
+// Has loops: true
+
+
+// Facebook graph data
+// Number of edges: 88060
+// Neighbors of vertex 1: [0, 48, 53, 54, 73, 88, 92, 119, 126, 133, 194, 236, 280, 299, 315, 322, 346]
+// Degree of vertex 1: 17
+// Average degree: 2.0
+// Min degree: 0
+// Max degree: 1045
+// Edge density: -2.1884130981866974E-4
+// Has loops: false
+
+// Wikipedia graph data
+// Neighbors of vertex 1: []
+// Degree of vertex 1: 0
+// Average degree: 2.0
+// Min degree: 0
+// Max degree: 1167
+// Edge density: -9.71964311893418E-5
+// Has loops: false

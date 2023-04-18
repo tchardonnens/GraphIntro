@@ -16,7 +16,7 @@ In an adjacency matrix representation, this operation takes O(N) time, regardles
 For sparse graphs with small degrees, adjacency lists provide a significant speedup for these operations.
 */
 
-public class GraphAdjMatrix {
+public class GraphAdjMatrix extends AbstractGraph {
     private int N; // number of nodes
     private int M; // number of edges
     private boolean[][] adj; // adjacency matrix representation
@@ -31,8 +31,8 @@ public class GraphAdjMatrix {
     // Initializes a graph from a specified input stream.
     public GraphAdjMatrix(InputStream inputStream) throws FileNotFoundException {
         Scanner scanner = new Scanner(inputStream);
-        this.N = 4; // number of nodes is 4
-        this.M = 6; // number of edges is 6
+        this.N = 6;
+        this.M = 4;
         adj = new boolean[N + 1][N + 1]; // +1 to accommodate for 1-based indexing of nodes
         while (scanner.hasNext()) { // read edges until the end of the file
             int u = scanner.nextInt();
@@ -65,6 +65,28 @@ public class GraphAdjMatrix {
         return dist;
     }
 
+    // 1. Calculate the degree of a given vertex
+    public int degree(int v) {
+        int degree = 0;
+        for (int i = 1; i <= N; i++) {
+            if (adj[v][i]) {
+                degree++;
+            }
+        }
+        return degree;
+    }
+
+    // 3. Are there any loops?
+    public boolean hasLoops() {
+        for (int i = 1; i <= N; i++) {
+            if (adj[i][i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public static void main(String[] args) throws FileNotFoundException {
         // Read graph from file
         FileInputStream fis = new FileInputStream("src/com/isep/graph.txt");
@@ -72,5 +94,39 @@ public class GraphAdjMatrix {
 
         // Test distance matrix
         System.out.println("Distance Matrix: " + Arrays.deepToString(graph.distanceMatrix()));
+
+        // Test degree
+        System.out.println("Degree of node 1: " + graph.degree(1));
+        System.out.println("Degree of node 2: " + graph.degree(2));
+        System.out.println("Degree of node 3: " + graph.degree(3));
+
+        System.out.println("Average degree: " + graph.averageDegree());
+        System.out.println("Min degree: " + graph.minDegree());
+        System.out.println("Max degree: " + graph.maxDegree());
+        System.out.println("Edge density: " + graph.edgeDensity());
+        System.out.println("Isolated nodes: " + graph.isolatedNodes());
+        System.out.println("Has loops: " + graph.hasLoops());
     }
 }
+
+// Graph.txt
+// Distance Matrix: [[0, 0, 0, 0, 0], [0, 0, 1, 1, 2], [0, 1, 0, 1, 2], [0, 1, 1, 0, 1], [0, 2, 2, 1, 0]]
+//  Degree of node 1: 3
+//  Degree of node 2: 2
+//  Degree of node 3: 3
+//  Average degree: 2.25
+//  Min degree: 1
+//  Max degree: 3
+//  Edge density: 1.0
+//  Isolated nodes: []
+//  Has loops: true
+
+// Facebook Graph Data
+// Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+//	at com.isep.GraphAdjMatrix.<init>(GraphAdjMatrix.java:36)
+//	at com.isep.GraphAdjMatrix.main(GraphAdjMatrix.java:136)
+
+// Wiki-Vote.txt
+// Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
+//	at com.isep.GraphAdjMatrix.<init>(GraphAdjMatrix.java:36)
+//	at com.isep.GraphAdjMatrix.main(GraphAdjMatrix.java:136)
